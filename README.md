@@ -1,1 +1,1 @@
-learning shell scripts.
+Learning C
