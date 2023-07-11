@@ -39,4 +39,4 @@ How to temporarily disable an alias
 
 **Other help pages**
 
-How to execute commands from a file in the current shell
+How to execute commands from a file in the current shell.
