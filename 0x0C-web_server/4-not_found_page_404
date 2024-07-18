@@ -1,9 +1,48 @@
 #!/usr/bin/env bash
-# Install nginx on your web-01 server
+# Configure Nginx server with custom 404 page
+
+# Update packages and install Nginx
 apt-get -y update
 apt-get -y install nginx
-echo "Hello World!" | sudo tee /var/www/html/index.html > /dev/null
-sed -i "46i rewrite ^/redirect_me https://www.youtube.com/watch?v=QH2-TGUlwu4 permanent;" /etc/nginx/sites-available/default
-echo "Ceci n'est pas une page" | sudo tee /var/www/html/custom_404.html > /dev/null
-sed -i "46i error_page 404 /custom_404.html;" /etc/nginx/sites-available/default
+
+# Create a simple HTML file for the default page
+echo "Hello World!" > /var/www/html/index.html
+
+# Create a custom 404 page
+echo "Ceci n'est pas une page" > /var/www/html/404.html
+
+# Configure Nginx
+cat > /etc/nginx/sites-available/default <<EOF
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+    root /var/www/html;
+    index index.html index.htm index.nginx-debian.html;
+    server_name _;
+
+    location /redirect_me {
+        return 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;
+    }
+
+    error_page 404 /404.html;
+    location = /404.html {
+        internal;
+    }
+
+    location / {
+        try_files \$uri \$uri/ =404;
+    }
+}
+EOF
+
+# Restart Nginx to apply changes
 service nginx restart
+
+# Verify Nginx is running
+if pgrep nginx > /dev/null
+then
+    echo "Nginx is running"
+else
+    echo "Nginx is not running"
+    exit 1
+fi
