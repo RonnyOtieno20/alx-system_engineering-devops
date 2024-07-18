@@ -1,4 +1,21 @@
 #!/usr/bin/env bash
-# fixes an apache server in a container
-echo "ServerName localhost" >> /etc/apache2.conf
+# Fixes an Apache server in a container and ensures it returns "Hello Holberton"
+
+# Add ServerName to Apache config if not already present
+if ! grep -q "ServerName localhost" /etc/apache2.conf; then
+    echo "ServerName localhost" >> /etc/apache2.conf
+fi
+
+# Create or update index.html with "Hello Holberton"
+echo "Hello Holberton" > /var/www/html/index.html
+
+# Start Apache service
 service apache2 start
+
+# Check if Apache is running and print status
+if service apache2 status | grep -q "apache2 is running"; then
+    echo "apache2 is running"
+else
+    echo "Error: apache2 is not running"
+    exit 1
+fi
