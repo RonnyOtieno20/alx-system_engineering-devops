@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DNS Resolution and Client-Server Interaction</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+    <h1>DNS Resolution and Client-Server Interaction</h1>
+    <div class="mermaid">
+        %%{init: {
+            'theme': 'default',
+            'themeVariables': {
+                'primaryColor': '#f0f0f0',
+                'lineColor': '#333333',
+                'tertiaryColor': '#f0f0f0'
+            }
+        }}%%
+        flowchart TD
+            Client(["Client"]):::clientStyle
+            LocalDNS["Local DNS Server"]:::dnsStyle
+            AuthDNS["Authoritative DNS Server"]:::dnsStyle
+            ISP_A["ISP A"]:::ispStyle
+            ISP_B["ISP B"]:::ispStyle
+            WebServer["www.example.com<br/>172.16.16.5"]:::serverStyle
+
+            Client -->|1. Tell me IP of www.example.com| LocalDNS
+            LocalDNS -->|2. IP of www.example.com?| AuthDNS
+            AuthDNS -->|3. IP is 172.16.16.5| LocalDNS
+            LocalDNS -->|4. IP is 172.16.16.5| Client
+            
+            subgraph Internet["Internet"]
+                ISP_A
+                ISP_B
+            end
+            
+            Client -->|5. Request| ISP_A
+            ISP_A -->|6. Route request| ISP_B
+            ISP_B -->|7. Forward request| WebServer
+            WebServer -->|8. Response| ISP_B
+            ISP_B -->|9. Route response| ISP_A
+            ISP_A -->|10. Forward response| Client
+
+            subgraph SOA["SOA example.com"]
+                AuthDNS -->|Contains| Records["www NS ns1.example.com<br/>www NS ns2.example.com<br/>ns1 A 10.10.10.1<br/>ns2 A 20.20.20.1"]
+            end
+
+            classDef clientStyle fill:#e6f3ff,stroke:#4d94ff,stroke-width:2px;
+            classDef dnsStyle fill:#fff5e6,stroke:#ffa64d,stroke-width:2px;
+            classDef ispStyle fill:#e6ffe6,stroke:#5cd65c,stroke-width:2px;
+            classDef serverStyle fill:#ffe6e6,stroke:#ff4d4d,stroke-width:2px;
+            classDef default fill:#f9f9f9,stroke:#333,stroke-width:1px;
+
+            style Internet fill:#f0f0f0,stroke:#999,stroke-width:1px,stroke-dasharray: 5 5
+            style SOA fill:#f0f0f0,stroke:#999,stroke-width:1px,stroke-dasharray: 5 5
+    </div>
+
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            securityLevel: 'loose',
+            flowchart: {
+                curve: 'basis'
+            }
+        });
+    </script>
+</body>
+</html>
