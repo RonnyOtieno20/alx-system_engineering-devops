@@ -1,21 +1,33 @@
 #!/usr/bin/env bash
 # Fixes an Apache server in a container and ensures it returns "Hello Holberton"
 
-# Add ServerName to Apache config if not already present
-if ! grep -q "ServerName localhost" /etc/apache2.conf; then
-    echo "ServerName localhost" >> /etc/apache2.conf
-fi
+# Update packages
+apt-get update
+
+# Install Apache if not already installed
+apt-get install -y apache2
 
 # Create or update index.html with "Hello Holberton"
 echo "Hello Holberton" > /var/www/html/index.html
+
+# Ensure Apache is configured to start on boot
+systemctl enable apache2
 
 # Start Apache service
 service apache2 start
 
 # Check if Apache is running and print status
-if service apache2 status | grep -q "apache2 is running"; then
+if service apache2 status | grep -q "active (running)"; then
     echo "apache2 is running"
 else
     echo "Error: apache2 is not running"
+    exit 1
+fi
+
+# Test if Apache is serving the correct content
+if curl -s localhost | grep -q "Hello Holberton"; then
+    echo "Apache is serving 'Hello Holberton'"
+else
+    echo "Error: Apache is not serving 'Hello Holberton'"
     exit 1
 fi
