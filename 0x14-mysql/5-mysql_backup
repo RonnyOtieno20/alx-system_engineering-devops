@@ -1,18 +1,19 @@
 #!/bin/bash
+# Script to generate mysql database backup
 
 # Check if password is provided
 if [ $# -eq 0 ]; then
-    echo "Please provide the MySQL root password as an argument"
-    exit 1
+	echo "Please provide the MySQL root password as an argument"
+	exit 1
 fi
 
 # MySQL dump
-mysqldump -u root -p"$1" --all-databases > backup.sql
+mysqldump -u root -p"$1" --all-databases >backup.sql
 
 # Check if mysqldump was successful
 if [ $? -ne 0 ]; then
-    echo "MySQL dump failed"
-    exit 1
+	echo "MySQL dump failed"
+	exit 1
 fi
 
 # Create archive name
@@ -23,8 +24,8 @@ tar -czf "$archive_name" backup.sql
 
 # Check if compression was successful
 if [ $? -ne 0 ]; then
-    echo "Compression failed"
-    exit 1
+	echo "Compression failed"
+	exit 1
 fi
 
 echo "Backup completed successfully"
