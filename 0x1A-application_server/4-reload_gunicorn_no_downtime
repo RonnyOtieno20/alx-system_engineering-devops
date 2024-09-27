@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
 # A script that reloads Gunicorn in a graceful way
 
-# Reload Gunicorn by sending a SIGHUP signal to the master process
-sudo pkill -HUP gunicorn
+# Find the Gunicorn master process ID
+GUNICORN_PID=$(pgrep -f "gunicorn.*master")
+
+# Send the HUP signal to the Gunicorn master process to reload gracefully
+if [ -n "$GUNICORN_PID" ]; then
+	kill -HUP "$GUNICORN_PID"
+	echo "Gunicorn has been gracefully reloaded."
+else
+	echo "Gunicorn master process not found."
+fi
