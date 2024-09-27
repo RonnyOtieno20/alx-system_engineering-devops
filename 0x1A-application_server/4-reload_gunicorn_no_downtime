@@ -1,5 +1,15 @@
 #!/usr/bin/env bash
 # A script that reloads Gunicorn in a graceful way
-sudo pkill -HUP gunicorn
-sudo systemctl restart gunicorn.service
-sudo systemctl restart gunicorn_api.service
+
+# Find the PID of the Gunicorn master process
+PID=$(pgrep gunicorn | head -n 1)
+
+if [ -z "$PID" ]; then
+	echo "Gunicorn is not running."
+	exit 1
+fi
+
+# Send the HUP signal to the Gunicorn master process
+kill -HUP "$PID"
+
+echo "Gunicorn gracefully reloaded."
