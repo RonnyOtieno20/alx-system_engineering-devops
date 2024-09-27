@@ -1,3 +1,5 @@
 #!/usr/bin/env bash
 # A script that reloads Gunicorn in a graceful way
-sudo systemctl reload-or-restart gunicorn
+
+# Reload Gunicorn by sending a SIGHUP signal to the master process
+sudo pkill -HUP gunicorn
