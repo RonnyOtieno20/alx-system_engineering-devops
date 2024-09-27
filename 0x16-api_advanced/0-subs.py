@@ -1,25 +1,39 @@
 #!/usr/bin/python3
-"""Script that returns no. of subscribers of a subreddit"""
+"""Module to query the Reddit API and return number of subscribers"""
 import requests
 
 
 def number_of_subscribers(subreddit):
-    """Function that returns no. of subs of a subreddit"""
-    if subreddit is None or not isinstance(subreddit, str):
+    """
+    Function that queries the Reddit API and returns the number of subscribers
+    for a given subreddit.
+
+    Args:
+        subreddit (str): The name of the subreddit.
+
+    Returns:
+        int: The number of subscribers if the subreddit is valid, 0 otherwise.
+    """
+    if not isinstance(subreddit, str):
         return 0
 
-    headers = {'User-Agent': 'selBot/1.0'}
-    URL = f'https://www.reddit.com/r/{subreddit}/about.json'
+    url = f"https://www.reddit.com/r/{subreddit}/about.json"
+    headers = {"User-Agent": "linux:0x16.api.advanced:v1.0.0\
+    (by /u/your_username)"}
 
-    try:
-        response = requests.get(URL, headers=headers, allow_redirects=False)
-        response.raise_for_status()
+    response = requests.get(url, headers=headers, allow_redirects=False)
+
+    if response.status_code == 200:
         data = response.json()
-        subscribers = data['data']['subscribers']
-        return subscribers
-
-    except requests.exceptions.RequestException:
+        return data["data"]["subscribers"]
+    else:
         return 0
 
-    except (KeyError, ValueError):
-        return 0
+
+if __name__ == "__main__":
+    import sys
+
+    if len(sys.argv) < 2:
+        print("Please pass an argument for the subreddit to search.")
+    else:
+        print("{:d}".format(number_of_subscribers(sys.argv[1])))
